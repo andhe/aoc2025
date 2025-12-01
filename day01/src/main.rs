@@ -40,6 +40,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let reader = BufReader::new(file);
     let mut dial: i32 = 50;
     let mut zero_count: i32 = 0;
+    let mut zero_pass: i32 = 0;
 
     // Read it line by line
     for line_result in reader.lines() {
@@ -48,16 +49,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         if let Ok(cmd) = Command::parse(&line) {
             println!("{:?}", cmd);
+            let dial_zero: bool = dial == 0;
             if cmd.dir == 'R' {
                 dial += cmd.value%100;
                 if dial > 99 {
                     dial -= 100;
+                    if !dial_zero && dial != 0 {
+                        zero_pass += 1;
+                    }
                 }
             } else {
                 dial -= cmd.value%100;
                 if dial < 0 {
                     dial += 100;
+                    if !dial_zero && dial != 0 {
+                        zero_pass += 1;
+                    }
                 }
+            }
+
+            if cmd.value > 99 {
+                let zero_hits: i32 = cmd.value / 100;
+                println!("Debug: warping {} times 0 passes", zero_hits);
+                zero_pass += zero_hits;
             }
 
             println!("Dial: {}", dial);
@@ -65,11 +79,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if dial == 0 {
                 zero_count += 1;
             }
+            println!("0 count: {}", zero_count);
+            println!("0 pass: {}", zero_pass);
         }
 
     }
 
     println!("Ended up on zero: {} times", zero_count);
+    println!("Passed zero: {} times", zero_pass);
+    println!("Total zero hits: {} times", zero_count + zero_pass);
 
     Ok(())
 }
