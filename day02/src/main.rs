@@ -28,16 +28,37 @@ impl Range {
 
         for v in self.start..=self.stop {
             let s = v.to_string();
+            /*
             let mid = s.len() / 2;
 
             if &s[..mid] == &s[mid..] {
                 //println!("Range {:?} has repeated {}", self, s);
                 bad.push(v);
             }
+            */
+            if let Some(rs) = repeated_substring(&s) {
+                println!("Range {:?} has {} repeated {}", self, s, rs);
+                bad.push(v);
+            }
         }
 
         bad
     }
+}
+
+
+fn repeated_substring(s: &str) -> Option<&str> {
+    let len = s.len();
+    for sub_len in 1..=len / 2 {
+        if len % sub_len == 0 {
+            let sub = &s[0..sub_len];
+            let repeated = sub.repeat(len / sub_len);
+            if repeated == s {
+                return Some(sub);
+            }
+        }
+    }
+    None
 }
 
 
