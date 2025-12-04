@@ -80,6 +80,28 @@ fn part1(grid: &Vec<Vec<char>>) {
     println!("Movable rolls: {}", total_movable);
 }
 
+fn part2(grid: &Vec<Vec<char>>) {
+    let mut updated_grid = grid.clone();
+    let mut removed = 0;
+
+    loop {
+        let n = update_grid(&mut updated_grid, '.');
+        removed += n;
+        if n > 0 {
+            println!("Again...");
+        } else {
+            break;
+        }
+    }
+
+    // Print result
+    for row in &updated_grid {
+        println!("{:?}", row);
+    }
+    println!("Removed: {} rolls", removed);
+ 
+}
+
 fn main() -> std::io::Result<()> {
     let contents = fs::read_to_string("input.txt")?;
 
@@ -99,8 +121,9 @@ fn main() -> std::io::Result<()> {
 
     println!("Height {} x Width {}", height, width);
 
-    part1(&grid);
-    
+    //part1(&grid);
+
+    part2(&grid);
 
     Ok(())
 }
