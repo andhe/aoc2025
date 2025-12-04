@@ -43,6 +43,43 @@ fn is_movable(grid: &Vec<Vec<char>>, x: usize, y: usize) -> bool {
     return false
 }
 
+fn update_grid(grid: &mut Vec<Vec<char>>, replace_char: char) -> usize {
+    let height = grid.len();
+    let width = grid[0].len();
+
+    let orig_grid = grid.clone();
+
+    let mut movable: Vec<(usize,usize)> = Vec::new();
+
+    // find positions
+    for y in 0..height {
+        for x in 0..width {
+            if grid[y][x] == '@' {
+                //println!("Roll at: x: {}, y: {}", x, y);
+                if is_movable(&orig_grid, x, y) {
+                    //println!("{}x{} is movable!", x, y);
+                    grid[y][x] = replace_char;
+                    movable.push((x,y));
+                }
+            }
+        }
+    }
+
+    return movable.len();
+}
+
+fn part1(grid: &Vec<Vec<char>>) {
+    let mut movable_grid = grid.clone();
+
+    let total_movable = update_grid(&mut movable_grid, 'x');
+
+    // Print result
+    for row in &movable_grid {
+        println!("{:?}", row);
+    }
+    println!("Movable rolls: {}", total_movable);
+}
+
 fn main() -> std::io::Result<()> {
     let contents = fs::read_to_string("input.txt")?;
 
@@ -62,28 +99,8 @@ fn main() -> std::io::Result<()> {
 
     println!("Height {} x Width {}", height, width);
 
-    let mut movable_grid = grid.clone();
-    let mut movable: Vec<(usize,usize)> = Vec::new();
-
-    // find positions
-    for y in 0..height {
-        for x in 0..width {
-            if grid[y][x] == '@' {
-                println!("Roll at: x: {}, y: {}", x, y);
-                if is_movable(&grid, x, y) {
-                    println!("{}x{} is movable!", x, y);
-                    movable_grid[y][x] = 'x';
-                    movable.push((x,y));
-                }
-            }
-        }
-    }
-
-    // Print result
-    for row in &movable_grid {
-        println!("{:?}", row);
-    }
-    println!("Movable rolls: {}", movable.len());
+    part1(&grid);
+    
 
     Ok(())
 }
