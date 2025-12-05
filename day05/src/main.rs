@@ -39,6 +39,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut spoiled = Vec::new();
     let mut fresh = Vec::new();
 
+    // ====== part 1 =====
     for linei in reader.lines() {
         let line = linei?;
 
@@ -72,6 +73,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     println!("Found {} spoiled and {} fresh.", spoiled.len(), fresh.len());
+
+    // ====== part 2 =====
+    let mut total_fresh: i64 = 0;
+
+    // sort ranges vector
+    ranges.sort_by(|a, b| {
+        a.start.cmp(&b.start)
+            .then(a.stop.cmp(&b.stop))
+    });
+
+    //println!("{:?}", ranges);
+
+    let mut current_val = 0;
+
+    for r in &ranges {
+        //println!("DEBUG: Calculating range: {:?}", r);
+
+        if current_val > r.stop { continue; }
+        if current_val < r.start { current_val = r.start; }
+
+        //println!("DEBUG: current_val (start): {}", current_val);
+        total_fresh += r.stop - current_val + 1;
+        current_val = r.stop + 1;
+        //println!("DEBUG: current_val (stop): {}", current_val);
+        //println!("DEBUG: current total_fresh: {}", total_fresh);
+    }
+
+    println!("Total fresh by all ranges: {}", total_fresh);
 
     Ok(())
 }
